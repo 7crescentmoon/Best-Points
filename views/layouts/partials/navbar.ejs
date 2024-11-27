@@ -1,0 +1,60 @@
+<nav class="container fixed-top navbar navbar-expand-lg navbar-light mb-3">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">BestPoint</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav me-auto">
+        <a class="nav-link <%= page === 'All' ? 'active' : '' %>" href="/places"
+          >Places</a
+        >
+        <% if (isAuth) { %>
+        <a
+          class="nav-link <%= page === 'Create Place' ? 'active' : '' %>"
+          href="/places/create"
+          >Create Place</a
+        >
+        <% } %>
+      </div>
+      <div class="navbar-nav">
+        <% if (!isAuth) { %>
+        <a
+          class="nav-link <%= page === 'register' ? 'active' : '' %>"
+          href="/register"
+          >Register</a
+        >
+        <a
+          class="nav-link <%= page === 'login' ? 'active' : '' %>"
+          href="/login"
+          >Login</a
+        >
+        <% } else { %>
+        <a
+          class="nav-link"
+          href="/logout"
+          onclick="
+            event.preventDefault();
+            document.getElementById('logout-form').submit();
+          "
+          >Logout</a
+        >
+        <form
+          action="/logout"
+          method="post"
+          class="d-none"
+          id="logout-form"
+        ></form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

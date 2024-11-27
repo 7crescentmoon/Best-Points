@@ -1,0 +1,231 @@
+<% layout('layouts/layout') %>
+<!-- link rating css -->
+<link rel="stylesheet" href="/css/rating.css" />
+
+<a href="/places" class="btn btn-primary mb-3 btn-sm">Back</a>
+<div class="row mb-3">
+  <div class="col-6">
+    <div class="card text-center">
+      <div id="carousel" class="carousel slide">
+        <div class="carousel-indicators">
+          <% place.images.forEach((image, index) => {%>
+          <button
+            type="button"
+            data-bs-target="#carousel"
+            data-bs-slide-to="<%= index %>"
+            class="<%= index === 0 ? 'active' : '' %>"
+            aria-current="true"
+            aria-label="Slide 1"
+          ></button>
+          <% }) %>
+        </div>
+        <div class="carousel-inner">
+          <% place.images.forEach((image, index) => {%>
+          <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+            <img
+              src="/images/<%= image.filename %>"
+              class="d-block w-100"
+              alt="..."
+              loading="eager"
+            />
+          </div>
+          <% }) %>
+        </div>
+        <% if (place.images.length > 1) { %>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carousel"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carousel"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+        <% } %>
+      </div>
+
+      <div class="card-body">
+        <h5 class="card-title">
+          <%= place.title %> - <small><%= place.location %></small>
+        </h5>
+        <p class="card-text">" <%= place.description %> "</p>
+      </div>
+      <div class="card-footer text-body-secondary">
+        Author : <%= place.author.username %>
+      </div>
+      <div class="card-footer text-body-secondary">Rp.<%= place.price %></div>
+      <% if (isAuth && place.author.equals(isAuth._id)) {%>
+      <div class="option d-flex gap-3 justify-content-center m-3">
+        <div class="">
+          <a href="/places/<%= place._id %>/edit" class="btn btn-warning"
+            >edit</a
+          >
+        </div>
+        <div class="">
+          <form action="/places/<%= place._id %>?_method=DELETE" method="POST">
+            <button type="submit" class="btn btn-danger">delete</button>
+          </form>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="col-5">
+    <div style="width: 640px; height: 480px" id="mapContainer"></div>
+    <% if(isAuth) { %>
+    <form
+      action="/places/<%= place._id %>/review"
+      method="post"
+      class="form-validation"
+      novalidate
+    >
+      <div class="mb-3">
+        <fieldset class="starability-basic" required>
+          <legend>Review</legend>
+          <input
+            type="radio"
+            id="no-rate"
+            class="input-no-rate"
+            name="review[rating]"
+            value="1"
+            checked
+            aria-label="No rating."
+          />
+          <input
+            type="radio"
+            id="first-rate1"
+            name="review[rating]"
+            value="1"
+          />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input
+            type="radio"
+            id="first-rate2"
+            name="review[rating]"
+            value="2"
+          />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input
+            type="radio"
+            id="first-rate3"
+            name="review[rating]"
+            value="3"
+          />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input
+            type="radio"
+            id="first-rate4"
+            name="review[rating]"
+            value="4"
+          />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input
+            type="radio"
+            id="first-rate5"
+            name="review[rating]"
+            value="5"
+          />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+        </fieldset>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+      <div class="mb-3">
+        <label for="body" class="form-label">Body</label>
+        <textarea
+          class="form-control"
+          name="review[body]"
+          id="body"
+          rows="3"
+          required
+        ></textarea>
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+      <button type="submit" class="btn btn-success mb-3">Submit</button>
+    </form>
+    <% } %>
+
+    <div class="mb-3">
+      <h4>Reviewers</h4>
+    </div>
+    <% for (review of place.reviews) { %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <p class="card-text">- <%= review.author.username %></p>
+        <h5
+          class="card-title starability-result"
+          data-rating="<%= review.rating %>"
+        >
+          Rating : <%= review.rating %>
+        </h5>
+        <p class="card-text"><%= review.body %></p>
+        <% if (isAuth && review.author.equals(isAuth._id)) {%>
+        <form
+          action="/places/<%= place._id %>/review/<%= review._id %>?_method=DELETE"
+          method="post"
+        >
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+<% /* eslint-disable */ %>
+<script>
+    const place = <%- JSON.stringify(place) %>;
+    console.log(place);
+    const placeLocation = {lng:place.geometry.coordinates[0], lat:place.geometry.coordinates[1]};
+    // Initialize the platform object
+    const platform = new H.service.Platform({
+      'apikey': 'xgnMhTN3RQBGKBzG3YMDYVK67RidvFgyNskoVvGQMvk'
+    });
+
+    // Obtain the default map types from the platform object
+    const defaultLayers = platform.createDefaultLayers();
+
+    // Instantiate (and display) the map
+    const map = new H.Map(
+      document.getElementById('mapContainer'),
+      defaultLayers.vector.normal.map,
+      {
+        zoom: 15,
+        center: placeLocation
+      });
+
+    const svg = `<svg width="25px" height="25px" fill="#db0606" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 395.71 395.71" xml:space="preserve" stroke="#db0606"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M197.849,0C122.131,0,60.531,61.609,60.531,137.329c0,72.887,124.591,243.177,129.896,250.388l4.951,6.738 c0.579,0.792,1.501,1.255,2.471,1.255c0.985,0,1.901-0.463,2.486-1.255l4.948-6.738c5.308-7.211,129.896-177.501,129.896-250.388 C335.179,61.609,273.569,0,197.849,0z M197.849,88.138c27.13,0,49.191,22.062,49.191,49.191c0,27.115-22.062,49.191-49.191,49.191 c-27.114,0-49.191-22.076-49.191-49.191C148.658,110.2,170.734,88.138,197.849,88.138z"></path> </g> </g></svg>`
+    const icon = new H.map.Icon(svg)
+    const marker = new H.map.Marker(placeLocation, {icon: icon})
+
+    map.addObject(marker);
+    map.setCenter(placeLocation);
+
+    const ui = H.ui.UI.createDefault(map, defaultLayers, 'en-US');
+    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+    // Create a map layer for the overview control
+  const overviewLayers = platform.createDefaultLayers();
+  // Instatiate the overview map by using the H.ui.Overview constructor
+  const overviewMap = new H.ui.Overview(overviewLayers.raster.satellite.map, {
+      //Set the control position and the map size and zoom parameters with respect to the map's viewport
+      alignment: H.ui.LayoutAlignment.LEFT_BOTTOM,
+      zoomDelta: 1,
+      scaleX: 5,
+      scaleY: 6
+  });
+  // Add the control to the map
+  ui.addControl('overview', overviewMap);
+</script>
+<% /* eslint-enable */ %>

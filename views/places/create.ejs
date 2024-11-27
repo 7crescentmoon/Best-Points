@@ -1,0 +1,89 @@
+<% layout('layouts/layout') %>
+
+<div class="container">
+  <div class="col-6 offset-3">
+    <h1 class="text-center">Create New Place</h1>
+    <a href="/places" class="btn btn-primary mb-3 btn-sm text-center">Back</a>
+    <form
+      action="/places"
+      method="POST"
+      class="form-validation"
+      enctype="multipart/form-data"
+      novalidate
+    >
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          class="form-control"
+          type="text"
+          name="place[title]"
+          placeholder="Title"
+          id="title"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>  
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input
+          class="form-control"
+          type="number"
+          name="place[price]"
+          placeholder="Price"
+          id="price"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          class="form-control"
+          type="text"
+          name="place[description]"
+          placeholder="Description"
+          id="description"
+          required
+        ></textarea>
+
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input
+          class="form-control"
+          type="text"
+          name="place[location]"
+          placeholder="Location"
+          id="location"
+          required
+        />
+
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="image" class="form-label">Image</label>
+        <input
+          class="form-control"
+          type="file"
+          name="image"
+          id="image"
+          accept="image/*"
+          multiple
+        />
+       
+      </div>
+
+      <button type="submit" class="btn btn-success mb-3">Submit</button>
+    </form>
+  </div>
+</div>
+

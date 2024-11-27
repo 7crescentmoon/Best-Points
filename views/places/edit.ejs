@@ -1,0 +1,143 @@
+<% layout('layouts/layout') %>
+
+<div class="row mb-5">
+  <h1 class="text-center">Edit New Place</h1>
+  <div class="col-6 <%= !place.images.length > 0 ? 'offset-3' : '' %>">
+    <a
+      href="/places/<%= place._id %>"
+      class="btn btn-primary mb-3 btn-sm text-center"
+      >Back</a
+    >
+    <form
+      action="/places/<%= place._id %>?_method=PUT"
+      method="POST"
+      novalidate
+      enctype="multipart/form-data"
+      class="form-validation"
+    >
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          class="form-control"
+          type="text"
+          name="place[title]"
+          placeholder="Title"
+          id="title"
+          value="<%= place.title %>"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input
+          class="form-control"
+          type="number"
+          name="place[price]"
+          placeholder="Price"
+          id="price"
+          value="<%= place.price %>"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <input
+          class="form-control"
+          type="text"
+          name="place[description]"
+          placeholder="Description"
+          id="description"
+          value="<%= place.description %>"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input
+          class="form-control"
+          type="text"
+          name="place[location]"
+          placeholder="Location"
+          id="location"
+          value="<%= place.location %>"
+          required
+        />
+        <div class="valid-feedback">Looks good!</div>
+        <div class="invalid-feedback">field is required</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="Image" class="form-label">Image</label>
+        <input
+          class="form-control"
+          type="file"
+          name="image"
+          id="Image"
+          accept="image/*"
+          multiple
+        />
+      </div>
+
+      <button type="submit" class="btn btn-success mb-3">Submit</button>
+    </form>
+  </div>
+  <% if (place.images.length > 0) {%>
+  <div class="col-6">
+    <h5 class="text-center">Delete images</h5>
+    <div class="form-group form-check">
+      <input type="checkbox" name="checkAll" id="checkAll" />
+      <label for="checkAll" class="form-check-label"> check All</label>
+    </div>
+
+    <form action="/places/<%= place._id %>/images?_method=DELETE" method="POST" class="d-flex flex-wrap">
+      <% place.images.forEach((image, index) => { %>
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <img
+            src="/images/<%= image.filename%>"
+            alt="<%= image.filename%>"
+            class="card-img-top img-fluid border"
+          />
+          <div class="card-body">
+            <label for="" class="custom-checkbox">
+              <input type="checkbox" name="images[]" value="<%= image.url %>" />
+              <span class="custom-checkbox-text">pilih</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+
+      <div class="w-100">
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+<% } %>
+
+<script>
+  document.getElementById("checkAll").addEventListener("change", function () {
+    const checkboxes = document.getElementsByName("images[]");
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].checked = this.checked;
+    }
+  });
+
+  const checkboxes = document.getElementsByName("images[]");
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", function () {
+      const allChecked = Array.from(checkboxes).every((cb) => cb.checked);
+      document.getElementById("checkAll").checked = allChecked;
+    });
+  });
+</script>
